@@ -1,4 +1,4 @@
-# SkillSyntax Web Platform
+# GVS Digital Trainings Web Platform
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
