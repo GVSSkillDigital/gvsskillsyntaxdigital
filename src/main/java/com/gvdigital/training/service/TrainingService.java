@@ -5,7 +5,7 @@ import com.gvdigital.training.model.StudentRegistration;
 import com.gvdigital.training.repository.CourseRepository;
 import com.gvdigital.training.repository.StudentRegistrationRepository;
 import org.springframework.stereotype.Service;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 
 @Service
