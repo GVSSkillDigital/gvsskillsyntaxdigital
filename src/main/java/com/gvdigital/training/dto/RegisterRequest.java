@@ -1,5 +1,6 @@
 package com.gvdigital.training.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -8,6 +9,7 @@ public record RegisterRequest(
 
     @NotBlank
     @Size(max = 150)
+    @JsonAlias("full_name")
     String fullName,
 
     @NotBlank
@@ -27,6 +29,8 @@ public record RegisterRequest(
     String courseCode,
 
     @NotBlank
+    @Size(max = 100)
+    @JsonAlias("education_level")
     String educationLevel
 
 ) {}

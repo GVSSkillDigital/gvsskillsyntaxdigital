@@ -70,6 +70,7 @@ public class UserService {
         profile.setDateOfBirth(request.dateOfBirth());
         profile.setProfileImageUrl(request.profileImageUrl());
         profile.setGender(request.gender());
+        profile.setEducationLevel(request.educationLevel());
 
         profileRepository.save(profile);
 
@@ -97,6 +98,7 @@ public class UserService {
             profile.getDateOfBirth(),
             profile.getProfileImageUrl(),
             profile.getGender(),
+            profile.getEducationLevel(),
             user.isEmailVerified()
         );
     }

@@ -22,6 +22,9 @@ public record UpdateProfileRequest(
     String profileImageUrl,
 
     @Size(max = 30)
-    String gender
+    String gender,
+
+    @Size(max = 100)
+    String educationLevel
 
 ) {}

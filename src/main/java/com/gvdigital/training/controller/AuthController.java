@@ -42,22 +42,22 @@ public class AuthController {
      * Creates an ACTIVE student account.
      * Email verification is not required for initial login.
      */
-@PostMapping("/register")
-public ResponseEntity<MessageResponse> register(
-        @Valid @RequestBody RegisterRequest request) {
+    @PostMapping("/register")
+    public ResponseEntity<MessageResponse> register(
+            @Valid @RequestBody RegisterRequest request) {
 
-    authService.registerStudent(request);
+        authService.registerStudent(request);
 
-    // This executes after the registration transaction commits.
-    authService.sendVerificationEmailForNewAccount(request.email());
+        // This executes after the registration transaction commits.
+        authService.sendVerificationEmailForNewAccount(request.email());
 
-    return ResponseEntity.status(201).body(
-            new MessageResponse(
-                    "Registration successful. You can now log in. " +
-                    "Please check your email for verification."
-            )
-    );
-}
+        return ResponseEntity.status(201).body(
+                new MessageResponse(
+                        "Registration successful. You can now log in. " +
+                        "Please check your email for verification."
+                )
+        );
+    }
 
     /**
      * Login using email and password.
@@ -67,6 +67,25 @@ public ResponseEntity<MessageResponse> register(
      */
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response) {
+
+        AuthSessionResult result = authService.login(request);
+
+        setRefreshCookie(response, result.refreshToken());
+
+        return ResponseEntity.ok(result.authResponse());
+    }
+
+
+        /**
+     * Login using email and password.
+     *
+     * Access token is returned in the response body.
+     * Refresh token is stored in an HttpOnly cookie.
+     */
+    @PostMapping("/loginUser")
+    public ResponseEntity<AuthResponse> loginUser(
             @Valid @RequestBody LoginRequest request,
             HttpServletResponse response) {
 

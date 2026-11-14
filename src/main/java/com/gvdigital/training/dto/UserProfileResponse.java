@@ -11,5 +11,6 @@ public record UserProfileResponse(
     LocalDate dateOfBirth,
     String profileImageUrl,
     String gender,
+    String educationLevel,
     boolean emailVerified
 ) {}

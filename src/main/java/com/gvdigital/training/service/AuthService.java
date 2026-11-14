@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.HexFormat;
@@ -37,6 +38,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserProfileRepository profileRepository;
+    private final CourseRepository courseRepository;
+    private final StudentRegistrationRepository
+            studentRegistrationRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final EmailVerificationTokenRepository
             emailVerificationTokenRepository;
@@ -55,6 +59,8 @@ public class AuthService {
             UserRepository userRepository,
             RoleRepository roleRepository,
             UserProfileRepository profileRepository,
+            CourseRepository courseRepository,
+            StudentRegistrationRepository studentRegistrationRepository,
             RefreshTokenRepository refreshTokenRepository,
             EmailVerificationTokenRepository emailVerificationTokenRepository,
             AuthenticationManager authenticationManager,
@@ -65,6 +71,9 @@ public class AuthService {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.profileRepository = profileRepository;
+        this.courseRepository = courseRepository;
+        this.studentRegistrationRepository =
+                studentRegistrationRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.emailVerificationTokenRepository =
                 emailVerificationTokenRepository;
@@ -80,16 +89,23 @@ public class AuthService {
      * The account is ACTIVE immediately.
      * Email verification is not required for login.
      *
-     * This method creates the User and UserProfile records.
-     * Course registration must be linked using your actual
-     * StudentRegistration entity and repository.
+     * This method creates the User, UserProfile, and
+     * StudentRegistration records in one transaction.
      */
     @Transactional
     public void registerStudent(RegisterRequest request) {
 
         String email = normalizeEmail(request.email());
+        String courseCode = request.courseCode().trim();
 
         validatePassword(request.password());
+
+        if (!courseRepository.existsByCode(courseCode)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "The selected course does not exist."
+            );
+        }
 
         if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new ResponseStatusException(
@@ -123,18 +139,13 @@ public class AuthService {
 
         profileRepository.save(profile);
 
-        /*
-         * IMPORTANT:
-         *
-         * Your existing student_registrations table must also
-         * be populated here, after we inspect its actual columns.
-         *
-         * The registration must be linked to this account:
-         *
-         * registration.setUser(user);
-         *
-         * Do not create another User for every course registration.
-         */
+        StudentRegistration registration = new StudentRegistration();
+        registration.setFullName(profile.getFullName());
+        registration.setEmail(email);
+        registration.setPhone(profile.getPhone());
+        registration.setCourseCode(courseCode);
+
+        studentRegistrationRepository.save(registration);
     }
 
     /**
@@ -358,6 +369,24 @@ public class AuthService {
         String fullName = profile != null
                 ? profile.getFullName()
                 : null;
+        String phone = profile != null
+                ? profile.getPhone()
+                : null;
+        String address = profile != null
+                ? profile.getAddress()
+                : null;
+        LocalDate dateOfBirth = profile != null
+                ? profile.getDateOfBirth()
+                : null;
+        String profileImageUrl = profile != null
+                ? profile.getProfileImageUrl()
+                : null;
+        String gender = profile != null
+                ? profile.getGender()
+                : null;
+        String educationLevel = profile != null
+                ? profile.getEducationLevel()
+                : null;
 
         Set<String> roles = user.getRoles()
                 .stream()
@@ -368,6 +397,12 @@ public class AuthService {
                 user.getId(),
                 user.getEmail(),
                 fullName,
+                phone,
+                address,
+                dateOfBirth,
+                profileImageUrl,
+                gender,
+                educationLevel,
                 user.isEmailVerified(),
                 roles
         );
