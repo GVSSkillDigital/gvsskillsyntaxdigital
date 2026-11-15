@@ -85,7 +85,10 @@ public class SecurityConfig {
                     "/api/auth/refresh",
                     "/api/auth/logout",
                     "/api/auth/verify-email",
-                    "/api/auth/resend-verification"
+                    "/api/auth/verify-email-id",
+                    "/api/auth/resend-verification",
+                    "/api/auth/passwordreset",
+                    "/api/auth/confirmcode"
                 ).permitAll()
 
                 .requestMatchers("/api/admin/**")

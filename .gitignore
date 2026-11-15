@@ -24,7 +24,7 @@ gradlew
 gradlew.cmd
 
 # Spring Boot devtools & logs
-application-local.properties
+#application-local.properties
 application-local.yml
 *.log
 logs/

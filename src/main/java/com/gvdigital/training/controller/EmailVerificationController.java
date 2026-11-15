@@ -1,7 +1,6 @@
 package com.gvdigital.training.controller;
 
 import com.gvdigital.training.dto.MessageResponse;
-import com.gvdigital.training.model.User;
 import com.gvdigital.training.repository.UserRepository;
 import com.gvdigital.training.service.EmailVerificationService;
 
@@ -10,9 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -36,6 +32,17 @@ public class EmailVerificationController {
     public record ResendRequest(
         @NotBlank @Email String email
     ) {}
+
+    @PostMapping("/verify-email-id")
+    public ResponseEntity<Boolean> verifyEmailId(
+        @RequestBody String email
+    ) {
+        boolean exists = email != null
+            && !email.isBlank()
+            && userRepository.existsByEmailIgnoreCase(email.trim());
+
+        return ResponseEntity.ok(exists);
+    }
 
     @PostMapping("/verify-email")
     public ResponseEntity<MessageResponse> verifyEmail(
